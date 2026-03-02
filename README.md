@@ -12,7 +12,7 @@ We are currently in the process of refactoring and documenting the source code t
 
 - **Phase 1 (March 2026):** Release of the core TRAC algorithm implementation.
 - **Phase 2 (April 2026):** Release of reproduction scripts for main experiments (e.g., GLUE benchmark).
-- **Phase 3 (Ongoing):** Integration with Hugging Face PEFT library and further optimizations.
+- **Phase 3 (Ongoing):** Release of additional extensions, further optimizations, and support for more model architectures.
 
 ## 📄 Abstract
 
