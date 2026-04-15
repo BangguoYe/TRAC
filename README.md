@@ -12,7 +12,6 @@ This is the official implementation repository for the paper **"TRAC: Tensor-Tra
 
 ### Method Overview
 ![TRAC Overview](trac_overview.png)
-*(Note: If your browser does not render PDF images, please download `trac_overview.pdf` to view the detailed method illustration.)*
 
 ---
 
