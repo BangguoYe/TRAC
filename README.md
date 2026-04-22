@@ -15,6 +15,33 @@ This is the official implementation repository for the paper **"TRAC: Tensor-Tra
 
 ---
 
+## Installation
+
+**1. Create and activate a new environment:**
+
+```bash
+conda create -n trac python=3.10 -y
+conda activate trac
+```
+
+**2. Install PyTorch:**
+Please install the appropriate version of PyTorch for your hardware from the [PyTorch](https://pytorch.org/). For example, for CUDA 12.1:
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+*(Note: Our codebase is tested with PyTorch 2.1.2)*
+
+**3. Install dependencies:**
+Install the requirements using the provided `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## Usage
 
 Using TRAC is highly similar to using standard PEFT methods like LoRA. You can easily integrate it into your existing Hugging Face `transformers` workflow.
@@ -102,10 +129,4 @@ url={https://openreview.net/forum?id=tz5yPWZp9W}
 
 ## Acknowledgements
 
-Our code implementation is inspired by and built upon several excellent open-source projects. We sincerely thank the authors of:
-
-- **PEFT**: https://github.com/huggingface/peft
-- **LoRA**: https://github.com/microsoft/LoRA
-- **LoRETTA**: https://github.com/yifanycc/loretta
-- **SoRA**: https://github.com/TsinghuaC3I/SoRA
-- **NoLA**: https://github.com/UCDvision/NOLA
+Our code implementation is inspired by and built upon several excellent open-source projects. We sincerely thank the authors of: [**PEFT**](https://github.com/huggingface/peft), [**LoRA**](https://github.com/microsoft/LoRA), [**LoRETTA**](https://github.com/yifanycc/loretta), [**SoRA**](https://github.com/TsinghuaC3I/SoRA), [**NoLA**](https://github.com/UCDvision/NOLA).
