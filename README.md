@@ -31,7 +31,7 @@ Please install the appropriate version of PyTorch for your hardware from the [Py
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
-*Note: Our codebase is tested with PyTorch 2.1.2 and CUDA 11.4)*
+*(Note: Our codebase is tested with PyTorch 2.1.2 and CUDA 11.4)*
 
 **3. Install dependencies:**
 Install the requirements using the provided `requirements.txt`:
