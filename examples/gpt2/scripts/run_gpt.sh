@@ -10,8 +10,8 @@
 # Configuration=
 # ============================================================
 MODEL_SIZE="md"       # "md" (gpt2-medium) or "lg" (gpt2-large)
-CUDA_DEVICE=4
-MASTER_PORT=10601
+CUDA_DEVICE=0
+MASTER_PORT=10000
 
 # ============================================================
 export CUDA_VISIBLE_DEVICES=$CUDA_DEVICE
@@ -36,9 +36,9 @@ fi
 # ============================================================
 # Training loop
 # ============================================================
-for lr in 0.005
+for lr in 0.01
 do
-scale_factors_lr=0.0005
+scale_factors_lr=0.01
 TIMESTAMP=$(date "+%Y%m%d-%H%M%S")
 
 # Method and dataset
