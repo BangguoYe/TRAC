@@ -82,7 +82,7 @@ If you need to modify the tensor structure, tensor shapes, or other advanced hyp
 
 ## Examples
 
-We provide ready-to-use scripts to reproduce our experiments on BERT (GLUE benchmark) and ViT.
+We provide ready-to-use scripts to reproduce our experiments.
 
 ### 1. BERT on GLUE
 
