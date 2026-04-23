@@ -31,7 +31,7 @@ Please install the appropriate version of PyTorch for your hardware from the [Py
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
-*(Note: Our codebase is tested with PyTorch 2.1.2)*
+*Note: Our codebase is tested with PyTorch 2.1.2 and CUDA 11.4)*
 
 **3. Install dependencies:**
 Install the requirements using the provided `requirements.txt`:
@@ -92,7 +92,29 @@ To run the fine-tuning script for BERT models on GLUE tasks:
 bash examples/bert/scripts/run_glue.sh
 ```
 
-### 2. ViT on Image Classification
+### 2. GPT-2 on Text Generation
+
+Before running GPT-2 experiments, please first download the evaluation scripts:
+
+```bash
+
+cd examples/gpt2/eval
+
+bash download_evalscript.sh
+
+```
+
+Then return to the project root directory and run:
+
+```bash
+
+bash examples/gpt2/scripts/run_gpt.sh
+
+```
+
+For more detailed experimental settings and evaluation protocols, please refer to the [LoRA NLG implementation](https://github.com/microsoft/LoRA/blob/main/examples/NLG/README.md).
+
+### 3. ViT on Image Classification
 
 To run the fine-tuning script for Vision Transformers:
 
@@ -104,9 +126,11 @@ bash examples/vit/scripts/run_vit.sh
 
 ## Release Roadmap
 
-- **April 2026:** Organize and release project environment requirements; optimize core `trac`, `bert`, and `vit` codebases with comprehensive comments.
-- **May 2026:** Release running examples and reproduction scripts for additional model architectures (e.g., LLaMA, Qwen, GPT).
-- **Long-term:** Continuously optimize the codebase, ensure compatibility with new model architectures, and provide ongoing bug fixes and maintenance.
+- Continuously maintain and improve the codebase, including bug fixes, framework optimization, and enhanced documentation.
+
+- Ensure compatibility with a broader range of model architectures and benchmarks.
+
+- Incorporate community feedback and support future extensions of TRAC.
 
 ------
 
@@ -129,4 +153,4 @@ url={https://openreview.net/forum?id=tz5yPWZp9W}
 
 ## Acknowledgements
 
-Our code implementation is inspired by and built upon several excellent open-source projects. We sincerely thank the authors of: [**PEFT**](https://github.com/huggingface/peft), [**LoRA**](https://github.com/microsoft/LoRA), [**LoRETTA**](https://github.com/yifanycc/loretta), [**SoRA**](https://github.com/TsinghuaC3I/SoRA), [**NoLA**](https://github.com/UCDvision/NOLA).
+Our code implementation is inspired by and built upon several excellent open-source projects. We sincerely thank the authors of: [**PEFT**](https://github.com/huggingface/peft), [**LoRA**](https://github.com/microsoft/LoRA), [**LoRETTA**](https://github.com/yifanycc/loretta), [**SoRA**](https://github.com/TsinghuaC3I/SoRA), [**NoLA**](https://github.com/UCDvision/NOLA), [**DoRA**](https://github.com/NVlabs/DoRA), [**LoRA-GA**](https://github.com/Outsider565/LoRA-GA).
