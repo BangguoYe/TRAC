@@ -7,7 +7,7 @@
 # Licensed under the MIT License (MIT).
 
 # ============================================================
-# Configuration=
+# Configuration
 # ============================================================
 MODEL_SIZE="md"       # "md" (gpt2-medium) or "lg" (gpt2-large)
 CUDA_DEVICE=0
