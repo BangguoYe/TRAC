@@ -92,6 +92,79 @@ class LoraLayer:
         self.disable_adapters = False
 
 
+class TracLayer(nn.Module):
+    """Base class for TRAC-like layers."""
+    def __init__(
+        self,
+        peft_config,
+        in_features: int,
+        out_features: int,
+        r: int = 0,
+        module_name: str = None,
+        shared_params: dict = None,
+        lora_alpha: int = 1,
+        lora_dropout: float = 0.0,
+        merge_weights: bool = False,
+    ):
+        super().__init__()
+
+        self.in_features = in_features
+        self.out_features = out_features
+
+        
+        self.r = r
+        self.lora_alpha = lora_alpha
+        self.scaling = self.lora_alpha / self.r
+
+        # Optional dropout
+        self.lora_dropout = lora_dropout
+        if lora_dropout > 0.:
+            self.lora_dropout = nn.Dropout(p=lora_dropout)
+        else:
+            self.lora_dropout = lambda x: x
+
+        # Actual trainable parameters
+        if r > 0:
+            self.target_sdv = np.sqrt(1/(self.in_features+self.out_features))
+
+            _param_structure = peft_config.param_structure if peft_config.param_structure is not None else PARAM_STRUCTURE
+
+            tensor_config_A = ConfigClass(
+                        lora_matrix_role="A",
+                        hidden_size=self.in_features,
+                        matrix_rank=r,
+                        tensor_shape=peft_config.tensor_shape[self.in_features] if peft_config.tensor_shape is not None else HIDDEN_SIZE_TO_TENSOR_SHAPE[self.in_features],
+                        tensor_ranks=peft_config.tensor_rank_A[self.in_features] if peft_config.tensor_rank_A is not None else HIDDEN_SIZE_TO_TENSOR_RANK_A[self.in_features],
+                        scale_shared_tt_cores=peft_config.scale_shared_tt_cores,
+                        zero_init=False,
+                        tensor_init=peft_config.tensor_init,
+                        scale_init=peft_config.scale_init,
+                        target_sdv=self.target_sdv)
+            
+            self.A = TensorizedLinearModule(tensor_config_A, _param_structure['trainable_dim']['A'], _param_structure['random_dim']['A'],\
+                                             shared_params[module_name]['A']['trainable'], shared_params[module_name]['A']['random'],\
+                                             is_input_side=True, vector_activation=peft_config.vector_activation, use_fast_tt=peft_config.use_fast_tt)
+
+            tensor_config_B = ConfigClass(
+                        lora_matrix_role="B",
+                        hidden_size=self.out_features,
+                        matrix_rank=r,
+                        tensor_shape=peft_config.tensor_shape[self.out_features] if peft_config.tensor_shape is not None else HIDDEN_SIZE_TO_TENSOR_SHAPE[self.out_features],
+                        tensor_ranks=peft_config.tensor_rank_B[self.out_features] if peft_config.tensor_rank_B is not None else HIDDEN_SIZE_TO_TENSOR_RANK_B[self.out_features],
+                        scale_shared_tt_cores=peft_config.scale_shared_tt_cores,
+                        zero_init=True,
+                        tensor_init=peft_config.tensor_init,
+                        scale_init=peft_config.scale_init,
+                        target_sdv=self.target_sdv)
+            
+            self.B = TensorizedLinearModule(tensor_config_B, _param_structure['trainable_dim']['B'], _param_structure['random_dim']['B'],\
+                                             shared_params[module_name]['B']['trainable'], shared_params[module_name]['B']['random'],\
+                                             vector_activation=peft_config.vector_activation, use_fast_tt=peft_config.use_fast_tt)
+
+    def forward(self, x):
+        return self.B(self.A(self.lora_dropout(x))) * self.scaling
+
+
 class Linear(nn.Linear, LoraLayer):
     """
     TRAC-adapted Linear layer that replaces standard nn.Linear.
@@ -108,7 +181,7 @@ class Linear(nn.Linear, LoraLayer):
         lora_alpha: int = 1,
         lora_dropout: float = 0.0,
         fan_in_fan_out: bool = False,  # Set this to True if the layer to replace stores weight like (fan_in, fan_out)
-        merge_weights: bool = True,
+        merge_weights: bool = False,
         **kwargs,
     ):
         
@@ -125,12 +198,11 @@ class Linear(nn.Linear, LoraLayer):
 
             tensor_config_A = ConfigClass(
                         lora_matrix_role="A",
-                        hidden_size=self.in_features,
+                        hidden_size=in_features,
                         matrix_rank=r,
                         tensor_shape=peft_config.tensor_shape[in_features] if peft_config.tensor_shape is not None else HIDDEN_SIZE_TO_TENSOR_SHAPE[in_features],
                         tensor_ranks=peft_config.tensor_rank_A[in_features] if peft_config.tensor_rank_A is not None else HIDDEN_SIZE_TO_TENSOR_RANK_A[in_features],
                         scale_shared_tt_cores=peft_config.scale_shared_tt_cores,
-                        tensor_bias=False,
                         zero_init=False,
                         tensor_init=peft_config.tensor_init,
                         scale_init=peft_config.scale_init,
@@ -142,12 +214,11 @@ class Linear(nn.Linear, LoraLayer):
 
             tensor_config_B = ConfigClass(
                         lora_matrix_role="B",
-                        hidden_size=self.out_features,
+                        hidden_size=out_features,
                         matrix_rank=r,
                         tensor_shape=peft_config.tensor_shape[out_features] if peft_config.tensor_shape is not None else HIDDEN_SIZE_TO_TENSOR_SHAPE[out_features],
                         tensor_ranks=peft_config.tensor_rank_B[out_features] if peft_config.tensor_rank_B is not None else HIDDEN_SIZE_TO_TENSOR_RANK_B[out_features],
                         scale_shared_tt_cores=peft_config.scale_shared_tt_cores,
-                        tensor_bias=False,
                         zero_init=True,
                         tensor_init=peft_config.tensor_init,
                         scale_init=peft_config.scale_init,
