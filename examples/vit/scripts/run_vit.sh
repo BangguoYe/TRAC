@@ -48,14 +48,14 @@ do
 for j in 0 # {0..3}  or  0 1 2 3
 do
 
-log_file="vit/results/results_${train_type}_${arch}/data_${dset}/${dset}_${timestamp}_vit_${arch}_${train_type}_rank_${rank}_lr_${lr}_epoch_${epoch}_bs_${bsz}_shot_${kshot}_sampling_${j}_seed_${seed}.log"
+log_file="examples/vit/results/results_${train_type}_${arch}/data_${dset}/${dset}_${timestamp}_vit_${arch}_${train_type}_rank_${rank}_lr_${lr}_epoch_${epoch}_bs_${bsz}_shot_${kshot}_sampling_${j}_seed_${seed}.log"
 echo "$log_file"
 echo "device=" $CUDA_VISIBLE_DEVICES
 
 mkdir -p "$(dirname "$log_file")"
 (exec > "$log_file" 2>&1
 
-python vit/src/train_vit.py \
+python examples/vit/src/train_vit.py \
     --train_type "$train_type" \
     --rank $rank \
     --lr $lr \
@@ -66,7 +66,7 @@ python vit/src/train_vit.py \
     --seed $seed \
     --dset $dset \
     --epochs $epoch \
-    --outdir vit/results/results_${train_type}_${arch}/data_${dset}/${dset}_${timestamp}_vit_${arch}_${train_type}_rank_${rank}_lr_${lr}_epoch_${epoch}_bs_${bsz}_shot_${kshot}_sampling_${j}_seed_${seed} \
+    --outdir examples/vit/results/results_${train_type}_${arch}/data_${dset}/${dset}_${timestamp}_vit_${arch}_${train_type}_rank_${rank}_lr_${lr}_epoch_${epoch}_bs_${bsz}_shot_${kshot}_sampling_${j}_seed_${seed} \
     --logdir $log_file)
 done
 done
