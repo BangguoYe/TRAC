@@ -7,14 +7,8 @@
 # Licensed under the MIT License (MIT).
 
 # ============================================================
-# Configuration
-# ============================================================
-MODEL_SIZE="md"       # "md" (gpt2-medium) or "lg" (gpt2-large)
-CUDA_DEVICE=0
-MASTER_PORT=10000
-
-# ============================================================
-export CUDA_VISIBLE_DEVICES=$CUDA_DEVICE
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONUNBUFFERED=1
 
 export MASTER_PORT=$MASTER_PORT
 export RANK=0
@@ -22,29 +16,34 @@ export WORLD_SIZE=1
 export MASTER_ADDR=localhost
 export TORCH_DISTRIBUTED_DEBUG=DETAIL   # Can be set to INFO or commented out
 
-model_card="gpt2.${MODEL_SIZE}"
+# ============================================================
+# Configuration
+# ============================================================
+MASTER_PORT=10601
+model_size="md"       # "md" (gpt2-medium) or "lg" (gpt2-large)
+model_card="gpt2.${model_size}"
 
-if [ "$MODEL_SIZE" = "md" ]; then
+if [ "$model_size" = "md" ]; then
     init_checkpoint="models/gpt/pretrained_checkpoints/gpt2-medium-pytorch_model.bin"
-elif [ "$MODEL_SIZE" = "lg" ]; then
+elif [ "$model_size" = "lg" ]; then
     init_checkpoint="models/gpt/pretrained_checkpoints/gpt2-large-pytorch_model.bin"
 else
-    echo "Error: MODEL_SIZE must be 'md' or 'lg', got '${MODEL_SIZE}'"
+    echo "Error: model_size must be 'md' or 'lg', got '${model_size}'"
     exit 1
 fi
 
 # ============================================================
 # Training loop
 # ============================================================
-for lr in 0.01
+for lr in 0.005
 do
-scale_factors_lr=0.01
-TIMESTAMP=$(date "+%Y%m%d-%H%M%S")
+scale_factors_lr=0.0005
+timestamp=$(date "+%Y%m%d-%H%M%S")
 
 # Method and dataset
-TYPE='trac'
-TASK='e2e'
-SEED=110
+tuning_type='trac'
+task='e2e'
+seed=110
 
 # Training hyperparameters
 lora_r=16
@@ -53,9 +52,9 @@ train_batch_size=8
 target_modules="q,v"
 
 # Output paths
-RESULT_BASE="examples/gpt2/results"
-EXP_NAME="${TASK}_${TIMESTAMP}_model_${model_card}_ft_${TYPE}_rank_${lora_r}_lr_${lr}_scale_factors_lr_${scale_factors_lr}_epoch_${max_epoch}_bs_${train_batch_size}_seed_${SEED}"
-output_dir="${RESULT_BASE}/results_${TYPE}_${model_card}/${EXP_NAME}"
+result_base="examples/gpt2/results"
+exp_name="${task}_${timestamp}_model_${model_card}_ft_${tuning_type}_rank_${lora_r}_lr_${lr}_scale_factors_lr_${scale_factors_lr}_epoch_${max_epoch}_bs_${train_batch_size}_seed_${seed}"
+output_dir="${result_base}/results_${tuning_type}_${model_card}/${exp_name}"
 
 log_file="${output_dir}.log"
 final_checkpoint_path="${output_dir}/checkpoint-26290.pt"   # The exact checkpoint index may need adjustment based on the actual number of training steps
@@ -98,7 +97,7 @@ python -m torch.distributed.launch --nproc_per_node=1 --master_port=$MASTER_PORT
     --lora_dropout 0.0 \
     --label_smooth 0.1 \
     --work_dir $output_dir \
-    --random_seed $SEED
+    --random_seed $seed
 
 python -m torch.distributed.launch --nproc_per_node=1 --master_port=$MASTER_PORT \
     examples/gpt2/src/gpt2_beam.py \
