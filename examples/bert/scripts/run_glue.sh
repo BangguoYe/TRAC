@@ -69,13 +69,13 @@ echo "rank_r=" $rank_r
 echo "seed=" $seed
 echo "device=" $device
 
-log_file="bert/results/results_${peft_type}_${model_name}/task_${task}/${task}_${TIMESTAMP}_model_${model_name}_${peft_type}_rank_${rank_r}_lr_${lr}_epoch_${epoch}_bs_${bsz}_seed_${seed}.log"
+log_file="examples/bert/results/results_${peft_type}_${model_name}/task_${task}/${task}_${TIMESTAMP}_model_${model_name}_${peft_type}_rank_${rank_r}_lr_${lr}_epoch_${epoch}_bs_${bsz}_seed_${seed}.log"
 echo "$log_file"
 mkdir -p "$(dirname "$log_file")"
 (exec > "$log_file" 2>&1
 
 CUDA_VISIBLE_DEVICES=$device \
-python -u bert/src/train_glue.py \
+python -u examples/bert/src/train_glue.py \
     --do_eval \
     --do_predict \
     --do_train \
@@ -92,7 +92,7 @@ python -u bert/src/train_glue.py \
     --model_name_or_path models/bert/roberta-base \
     --model_name $model_name \
     --num_train_epochs $epoch \
-    --output_dir bert/results/results_${peft_type}_${model_name}/task_${task}/${task}_${TIMESTAMP}_model_${model_name}_${peft_type}_rank_${rank_r}_lr_${lr}_epoch_${epoch}_bs_${bsz}_seed_${seed} \
+    --output_dir examples/bert/results/results_${peft_type}_${model_name}/task_${task}/${task}_${TIMESTAMP}_model_${model_name}_${peft_type}_rank_${rank_r}_lr_${lr}_epoch_${epoch}_bs_${bsz}_seed_${seed} \
     --overwrite_output_dir \
     --per_device_eval_batch_size $bsz \
     --per_device_train_batch_size $bsz \
